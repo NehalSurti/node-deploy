@@ -1,0 +1,252 @@
+const fs = require("fs");
+// const lib = require("./lib.js");
+// const express = require('express');
+
+// import {sum,diff} from './lib.js';
+
+// const txt = fs.readFileSync('demo.txt','utf-8');
+// console.log(txt);
+
+// fs.readFile('demo.txt','utf-8', (err, txt) => {
+//     console.log(txt);
+// });
+
+// const args = process.argv;
+// let firstArg;
+// let secondArg;
+// console.log(args);
+
+// if (args.length > 2) {
+// firstArg = parseInt(args[2]);
+// console.log(firstArg);
+// secondArg = parseInt(args[3]);
+// console.log(secondArg);
+// console.log('First argument:', firstArg);
+// }
+
+// console.log(lib.sum(firstArg, secondArg));
+// console.log(lib.diff(firstArg, secondArg));
+// console.log(sum(4,5), diff(3,6));
+
+// const a=5;
+// console.log("hello bro yo bro");
+// const server = express();
+// server.listen(8080);
+
+const http = require("http");
+const url = require("url");
+
+const index = fs.readFileSync("index.html", "utf-8");
+// console.log(txt);
+const data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
+const products = data.products;
+// const data = {
+//   'age' : 5
+// };
+
+// const port2 = 4000;
+
+const server = http.createServer((req, res) => {
+  console.log(req.url, req.method);
+
+  const parsedUrl = url.parse(req.url, true);
+  console.log(parsedUrl);
+  const queryParams = parsedUrl.query;
+  console.log(queryParams);
+
+  if (parsedUrl.pathname === "/demo" && queryParams.product) {
+    const productId = queryParams.product;
+    
+    const prdt = products.find((p) => p.id === +productId);
+    // console.log(prd);
+    res.setHeader("Content-Type", "text/html");
+    let modifiedIndexdm = index
+      .replace("**title**", prdt.title)
+      .replace("**url**", prdt.thumbnail)
+      .replace("**price**", prdt.price)
+      .replace("**rating**", prdt.rating);
+    res.end(modifiedIndexdm);
+    return;
+  }
+
+  // Define routes based on method and URL path
+  const routes = {
+    GET: {
+      "/": handleRootGet,
+      "/api": handleApiGet,
+      "/product": handleApiGet,
+      "/demo": handleDemoGet,
+      // Add more GET routes here
+    },
+    POST: {
+      "/demo": handleDemoPost,
+      // Add more POST routes here
+    },
+  };
+
+  // Get the handler function based on method and URL path
+  const routeHandler = routes[req.method][req.url];
+
+  // If a matching handler is found, call it; otherwise, send a 404 response
+  if (routeHandler) {
+    routeHandler(req, res);
+  } else {
+    if (req.url.startsWith("/product")) {
+      const id = req.url.split("/")[2];
+      const prd = products.find((p) => p.id === +id);
+      // console.log(prd);
+      res.setHeader("Content-Type", "text/html");
+      let modifiedIndex = index
+        .replace("**title**", prd.title)
+        .replace("**url**", prd.thumbnail)
+        .replace("**price**", prd.price)
+        .replace("**rating**", prd.rating);
+      res.end(modifiedIndex);
+      return;
+    } else {
+      sendNotFound(res);
+    }
+  }
+
+  // if (req.url.startsWith("/product")) {
+  //   const id = req.url.split("/")[2];
+  //   const prd = products.find((p) => p.id === +id);
+  //   // console.log(prd);
+  //   res.setHeader("Content-Type", "text/html");
+  //   let modifiedIndex = index
+  //     .replace("**title**", prd.title)
+  //     .replace("**url**", prd.thumbnail)
+  //     .replace("**price**", prd.price)
+  //     .replace("**rating**", prd.rating);
+  //   res.end(modifiedIndex);
+  //   return;
+  // }
+
+  // switch (req.url) {
+  //   case "/":
+  //     res.setHeader("Content-Type", "text/html");
+  //     res.end(index);
+  //     break;
+  //   case "/api":
+  //     res.setHeader("Content-Type", "application/json");
+  //     res.end(JSON.stringify(data));
+  //     break;
+  //   default:
+  //     res.writeHead(404);
+  //     res.end();
+  // }
+
+  console.log("Server started");
+
+  // res.end(JSON.stringify(data));
+  // res.end(index);
+});
+
+server.listen(8080);
+
+// const server2 = http.createServer((req, res) => {
+//   console.log(req.url, req.method);
+
+//   // Define routes based on method and URL path
+//   const routes = {
+//     GET: {
+//       "/": handleRootGet,
+//       "/api": handleApiGet,
+//       "/product": handleApiGet,
+//       "/demo": handleDemoGet,
+//       // Add more GET routes here
+//     },
+//     POST: {
+//       "/demo": handleDemoPost,
+//       // Add more POST routes here
+//     },
+//   };
+
+//   // Get the handler function based on method and URL path
+//   const routeHandler = routes[req.method][req.url];
+
+//   // If a matching handler is found, call it; otherwise, send a 404 response
+//   if (routeHandler) {
+
+//     routeHandler(req, res);
+
+//   } else {
+
+//     if (req.url.startsWith("/product")) {
+//       const id = req.url.split("/")[2];
+//       const prd = products.find((p) => p.id === +id);
+//       // console.log(prd);
+//       res.setHeader("Content-Type", "text/html");
+//       let modifiedIndex = index
+//         .replace("**title**", prd.title)
+//         .replace("**url**", prd.thumbnail)
+//         .replace("**price**", prd.price)
+//         .replace("**rating**", prd.rating);
+//       res.end(modifiedIndex);
+//       return;
+//     } else {
+//       sendNotFound(res);
+//     }
+
+//   }
+
+//   // if (req.url.startsWith("/product")) {
+//   //   const id = req.url.split("/")[2];
+//   //   const prd = products.find((p) => p.id === +id);
+//   //   // console.log(prd);
+//   //   res.setHeader("Content-Type", "text/html");
+//   //   let modifiedIndex = index
+//   //     .replace("**title**", prd.title)
+//   //     .replace("**url**", prd.thumbnail)
+//   //     .replace("**price**", prd.price)
+//   //     .replace("**rating**", prd.rating);
+//   //   res.end(modifiedIndex);
+//   //   return;
+//   // }
+
+//   // switch (req.url) {
+//   //   case "/":
+//   //     res.setHeader("Content-Type", "text/html");
+//   //     res.end(index);
+//   //     break;
+//   //   case "/api":
+//   //     res.setHeader("Content-Type", "application/json");
+//   //     res.end(JSON.stringify(data));
+//   //     break;
+//   //   default:
+//   //     res.writeHead(404);
+//   //     res.end();
+//   // }
+
+//   console.log("Server started");
+
+//   // res.end(JSON.stringify(data));
+//   // res.end(index);
+// });
+
+// server2.listen(port2);
+
+function handleRootGet(req, res) {
+  res.setHeader("Content-Type", "text/html");
+  res.end(index);
+}
+
+function handleApiGet(req, res) {
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(data));
+}
+
+function handleDemoGet(req, res) {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("This is the Demo GET page.");
+}
+
+function handleDemoPost(req, res) {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("This is the Demo POST page.");
+}
+
+function sendNotFound(res) {
+  res.writeHead(404, { "Content-Type": "text/plain" });
+  res.end("404 Not Found");
+}
