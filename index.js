@@ -11,12 +11,14 @@ require("dotenv").config();
 const DB_PASSWORD = process.env.DB_PASSWORD;
 console.log("DB_PASSWORD :", DB_PASSWORD);
 
+const MONGO_URL = process.env.MONGO_URL;
+
 const mongoose = require("mongoose");
 main().catch((err) => console.log(err));
 
 async function main() {
   // await mongoose.connect(`mongodb+srv://nehal:${DB_PASSWORD}@cluster0.x4e32rd.mongodb.net/ecommerceDatabase?retryWrites=true&w=majority`);
-  await mongoose.connect(process.env.MONGO_URL);
+  await mongoose.connect(MONGO_URL);
   console.log("Database Connected");
 }
 
