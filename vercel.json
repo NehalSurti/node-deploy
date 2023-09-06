@@ -20,6 +20,10 @@
             "dest": "index.js"
         },
         {
+            "src": "/(.*)",
+            "dest": "index.js"
+        },
+        {
             "src": "/",
             "dest": "build/index.html"
         },

@@ -18,6 +18,7 @@ main().catch((err) => console.log(err));
 
 async function main() {
   // await mongoose.connect(`mongodb+srv://nehal:${DB_PASSWORD}@cluster0.x4e32rd.mongodb.net/ecommerceDatabase?retryWrites=true&w=majority`);
+  // await mongoose.connect(`mongodb://127.0.0.1:27017/ecommerce`);
   await mongoose.connect(MONGO_URL);
   console.log("Database Connected");
 }
@@ -29,6 +30,16 @@ const index = fs.readFileSync("index.html", "utf-8");
 const server = express();
 
 server.use(cors());
+
+// server.use((req, res, next) => {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+//   // You can also set other CORS headers as needed
+//   // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+//   // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   next();
+// });
+
+
 server.use(express.json());
 server.use(morgan("dev"));
 server.use(express.static(path.join(__dirname, process.env.PUBLIC_DIR)));
