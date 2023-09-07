@@ -23,7 +23,7 @@ async function main() {
   console.log("Database Connected");
 }
 
-const index = fs.readFileSync("index.html", "utf-8");
+// const index = fs.readFileSync("index.html", "utf-8");
 
 
 
